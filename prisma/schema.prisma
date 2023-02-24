@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  parentCompanyId Int?
+  parentCompany   Company?  @relation("ParentChildCompany", fields: [parentCompanyId], references: [id])
+  childCompanies  Company[] @relation("ParentChildCompany")
+
+  Station Station[]
+}
+
+model Station {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId Int
+
+  stationType   StationType @relation(fields: [stationTypeId], references: [id])
+  stationTypeId Int
+}
+
+model StationType {
+  id       Int       @id @default(autoincrement())
+  name     String
+  maxPower Int
+  Stations Station[]
+}
